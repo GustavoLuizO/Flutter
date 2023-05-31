@@ -29,10 +29,21 @@ class SQLHelper{
     return id;
   }
   
-  static Future<List<Map<String, dynamic>>> getAllData() async {
-    final db = await SQLHelper.db();
-    return db.query('data', orderBy: 'id'); 
+  static Future<List<Map<String, dynamic>>> getAllData({String? searchText}) async {
+  final db = await SQLHelper.db();
+    if (searchText != null && searchText.isNotEmpty) {
+      return db.query(
+        'data',
+        where: 'tipo LIKE ?',
+        whereArgs: ['%$searchText%'],
+        orderBy: 'id',
+      );
+    } else {
+      return db.query('data', orderBy: 'id');
+    }
   }
+
+
   
   static Future<int> updateData(int id, String tipo, String valor) async {
     final db = await SQLHelper.db();
