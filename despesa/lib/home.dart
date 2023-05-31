@@ -12,11 +12,20 @@ class _HomeState extends State<Home> {
   List<Map<String, dynamic>> _allData = [];
   bool _isLoading = true;
   String _searchText = '';
+  double _valorTotal = 0;
 
   void _refreshData() async {
     final data = await SQLHelper.getAllData(searchText: _searchText);
+    double total = 0; // Variável local para calcular o valor total
+
+    for (final item in data) {
+      final valor = double.tryParse(item['valor']) ?? 0;
+      total += valor;
+    }
+
     setState(() {
       _allData = data;
+      _valorTotal = total; // Atualizando o valor total
       _isLoading = false;
     });
   }
@@ -120,6 +129,16 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
+          Container(
+            margin: const EdgeInsets.all(10),
+            child: Text(
+              'Valor Total: $_valorTotal',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -128,6 +147,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
 
   void showBottomSheet(int? id) async {
     if (id != null) {
